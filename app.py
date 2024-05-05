@@ -12,8 +12,8 @@ import common
 app = Flask(__name__)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
-certificate = os.path.join(script_dir,"certs/flaskapp.crt")
-certificatePrivateKey = os.path.join(script_dir,"certs/flaskapp.key")
+certificate = os.path.join(script_dir,"certs/luna/flaskapp.crt")
+certificatePrivateKey = os.path.join(script_dir,"certs/luna/flaskapp.key")
 
 app.config['JWT_SECRET_KEY'] = common.hash_string(open(certificatePrivateKey, 'r').read())
 socketio = SocketIO(app)
