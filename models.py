@@ -63,3 +63,10 @@ class message_obj(Base):
     time_sent: Mapped[str] = mapped_column(String)
     message: Mapped[str] = mapped_column(String)
     entry_id: Mapped[int] = mapped_column(Integer,primary_key=True, autoincrement=True)
+    
+class articles_obj(Base):
+    __tablename__ = "articles"
+    title: Mapped[str] = mapped_column(String)
+    content: Mapped[str] = mapped_column(String)
+    author: Mapped[str] = mapped_column(String)
+    article_id: Mapped[int] = mapped_column(Integer,primary_key=True, autoincrement=True)

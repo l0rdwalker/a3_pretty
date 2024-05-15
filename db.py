@@ -257,3 +257,17 @@ def add_user_to_chat(user_name, chat_id):
             session.add(message_instance)
             session.commit()
         
+def get_all_articles():
+    with Session(engine) as session:
+        articles = session.query(articles_obj).all()
+        articles_json_array = []
+        
+        for article in articles:
+            articles_json_array.append({
+                'title' : article.title,
+                'content' : article.content,
+                'author' : article.author,
+                'article_id' : article.article_id
+            })
+            
+        return articles_json_array

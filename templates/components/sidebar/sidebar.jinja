@@ -7,8 +7,6 @@
     </style> 
 
     <script>
-        var GLOBAL_CHAT_LIST = null;
-
         function CLEAR_chatrooms_list() {
             while (document.getElementsByClassName("content-cell").length > 0) {
                 document.getElementsByClassName("content-cell")[0].remove();
@@ -31,7 +29,7 @@
             }
         }
 
-        socket.on("your_chat_rooms", (msg, color="black") => {
+        socket.on("recieve_chatrooms", (msg, color="black") => {
             chat_rooms = JSON.parse(msg)['chat_rooms'];
             LOAD_chatrooms_list(chat_rooms);
         });

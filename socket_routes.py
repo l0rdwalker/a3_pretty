@@ -97,14 +97,10 @@ def connect(): #Main method which establishes connection to oncoming users
             
             relay_friend_requests(user_name)
             relay_online_friends_list(user_name)
-            get_user_chats(user_name)
     else:
         inform_error("Invalid connection credentials",request.sid,registered=False)
 
-@socketio.on('load_chat_configs')
-def load_chat_configs(message):
-    message_json = json.loads(message)
-    get_user_chats(message_json['sender'])
+
 
 @socketio.on('disconnect')
 def manage_disconnect(): #Manages user disconnections
@@ -155,7 +151,7 @@ def create_new_chat_room(message):
     message_json = json.loads(message)
     if db.is_valid_username(message_json['sender']):
         chat_room_id = db.create_new_chatroom(message_json['sender'])
-        get_user_chats(message_json['sender'])
+        get_chatroom_config(message)
         send_chat_room(json.dumps({'sender':message_json['sender'],'chat_room_id':chat_room_id}))
 
 @socketio.on("open_chat")
@@ -179,11 +175,28 @@ def send_messaage_to_chat(message):
     if db.is_valid_username(message_json['sender']) and db.is_valid_chatroomid(message_json['chat_room_id']):
         db.add_message_to_chat(message_json['sender'],message_json['message'],message_json['chat_room_id'])
         update_chat_for_relevent_online_users(message_json['chat_room_id'])
-        
-@socketio.on("get_user_chats")
-def get_user_chats(user_name):
-    emit('your_chat_rooms',json.dumps({"chat_rooms":db.get_chats_by_username(user_name)}),room=user_aggregator.get_relay_connection_reference(user_name))
-    
+
+
+@socketio.on("get_chatrooms")
+def get_chatroom_config(message):
+    message_json = json.loads(message)
+    user_name = message_json['sender']
+    emit('recieve_chatrooms',json.dumps({"chat_rooms":db.get_chats_by_username(user_name)}),room=user_aggregator.get_relay_connection_reference(user_name))
+@socketio.on("get_articles")
+def get_articles_config(message):
+    message_json = json.loads(message)
+    user_name = message_json['sender']
+    emit('recieve_articles',json.dumps({"articles":db.get_all_articles()}),room=user_aggregator.get_relay_connection_reference(user_name))
+
+
+
+@socketio.on("get_all_articles")
+def get_all_articles(message):
+    message_json = json.loads(message)
+    all_articles = db.get_all_articles()
+    connection_reference = user_aggregator.get_relay_connection_reference(message_json['sender'])
+    emit('get_all_articles',json.dumps({"articles":all_articles}),room=connection_reference)
+
 @socketio.on('change_chat_name')
 def change_chat_name(message):
     message_json = json.loads(message)
@@ -196,7 +209,7 @@ def update_chat_for_relevent_online_users(chat_id):
     for user in chat_room['members']:
         if user_aggregator.is_online(user):
             send_chat_room(json.dumps({'sender':user,'chat_room_id':chat_id}))
-            get_user_chats(user)
+            get_chatroom_config(json.dumps({'sender':user}))
 
 @socketio.on("delete_chat_by_id")
 def delete_chat_by_id(message):
@@ -205,7 +218,7 @@ def delete_chat_by_id(message):
     
     for user in users_to_update:
         if user_aggregator.is_online(user):
-            get_user_chats(user)
+            get_chatroom_config(json.dumps({'sender':user}))
             new_chat_room_id = db.get_random_chatroom_for_user(user)
             send_chat_room(json.dumps({'sender':user,'chat_room_id':new_chat_room_id}))
     
@@ -216,18 +229,3 @@ def get_autocomplete_suggestions(message):
     suggestion = db.get_user_suggestion(message_json['entered'],message_json['sender'])
 
     emit("name_suggestion",json.dumps({"suggestion":suggestion}),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
-    
-    
-@socketio.on('get_page_data')
-def get_page_data(message):
-    message_json = json.loads(message)
-    if (message_json['page'] == 'social'):
-        main_page = render_template("./components/messager/messager.jinja")
-        side_bar = render_template("./components/sidebar/sidebar.jinja")
-        page_type = "social"
-    elif (message_json['page'] == 'knowledge'):
-        main_page = ""
-        side_bar = ""
-        page_type = ""
-    
-    emit("recieve_page_data",json.dumps({"page_data_sidebar":side_bar,'page_data_main':main_page, 'page_type':page_type}),room=user_aggregator.get_relay_connection_reference(message_json['sender']))

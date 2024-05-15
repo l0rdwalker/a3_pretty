@@ -29,7 +29,7 @@
 
         function OPEN_chat(element) {
             var chat_id = element.getAttribute("chat_room_id");
-            console.log(chat_id);
+            document.getElementById('messenger_content').style.display = 'flex';
             socket.emit('open_chat',JSON.stringify({sender: user_name, recipient:"", chat_room_id:chat_id})); 
         }
 
@@ -46,10 +46,9 @@
                 document.getElementById('messenger_content').style.display = 'none';
             }
         });
-    
     </script>
 
-    <div id="messenger_content" class="messenger_content">
+    <div style="display: none;" id="messenger_content" class="messenger_content">
         <div class="messenger_header blow-out">
             <div class="title-delete-divide">
                 <div style="flex:9;">

@@ -4,42 +4,42 @@
     </style> 
 
     <script>
-        let state = false;
+        let state = true;
+
         function switch_state(element) {
             let highlight = document.getElementById("main_slide_btn");
             let width = (document.getElementById("toggle-page-wpr").getBoundingClientRect()['width']/2)+5;
+
+            var messaging_items = document.getElementById("messaging_items");
+            var knowledge_items = document.getElementById("knowledge_items");
             
             if (state) {
-                highlight.style.transform = "translate(0px,-23px)";
-                highlight.style.borderRadius = "10px 0px 0px 10px";
-                state = false;
-                get_page_data('social');
-            } else {
                 highlight.style.transform = "translate("+width+"px,-23px)";
                 highlight.style.borderRadius = "0px 10px 10px 0px";
+                state = false;
+
+                messaging_items.style.display = '';
+                knowledge_items.style.display = 'none';
+                get_state(state);
+            } else {
+                highlight.style.transform = "translate(0px,-23px)";
+                highlight.style.borderRadius = "10px 0px 0px 10px";
                 state = true;
-                get_page_data('knowledge');
+
+                messaging_items.style.display = 'none';
+                knowledge_items.style.display = '';
+                get_state(state);
             }
         }
 
-        function get_page_data(page) {
-            console.log("commit");
-            socket.emit('get_page_data',JSON.stringify({sender: user_name, 'page':page})); 
-        }
-
-        socket.on("recieve_page_data", (msg, color="black") => {
-            var message_json = JSON.parse(msg);
-    
-            var side_bar = document.getElementById("dynamic_sidebar");
-            side_bar.innerHTML = message_json['page_data_sidebar'];
-
-            var main_page = document.getElementById("padding_alt");
-            main_page.innerHTML = message_json['page_data_main'];
-
-            if (message_json['page_type'] == 'social') {
-                socket.emit('load_chat_configs',JSON.stringify({sender: user_name})); 
+        function get_state(state_name) {
+            if (state_name) {
+                socket.emit('get_articles',JSON.stringify({sender: user_name})); 
+            } else { 
+                socket.emit('get_chatrooms',JSON.stringify({sender: user_name}));  
             }
-        });
+        }
+        get_state(state);
     </script>
             
     <div id="toggle-page-wpr" class="toggle-wpr">

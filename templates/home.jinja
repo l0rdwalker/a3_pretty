@@ -15,7 +15,7 @@
         document.cookie = "username="+user_name;
         document.cookie = "user_hash="+user_hash;
 
-        const socket = io();
+        var socket = io();
     </script>
 
     <body>
@@ -28,17 +28,29 @@
             <div class="right_side_line" id="side_bar_wpr">
                 {% include './components/friends-list/friends-list.jinja' %}
             </div>
-            <div id="main_content_wpr">
-                <div class="right_side_line" id="dynamic_sidebar">
+
+            <div style="display: none;" id="messaging_items" class="main_content_wpr">
+                <div class="dynamic_sidebar right_side_line">
                     {% include './components/sidebar/sidebar.jinja' %}
                 </div>
-                <div id="dynamic_main">
-                    <div id="padding_alt">
+                <div class="dynamic_main">
+                    <div class="dynamic_main_padding">
                         {% include './components/messager/messager.jinja' %}
                     </div>
                 </div>
             </div>
 
+            
+            <div id="knowledge_items" class="main_content_wpr">
+                <div class="dynamic_sidebar right_side_line">
+                    {% include './components/articles_sidebar/articles_sidebar.jinja' %}
+                </div>
+                <div class="dynamic_main">
+                    <div class="dynamic_main_padding">
+                        
+                    </div>
+                </div>
+            </div>
 
         </div>
     </body>

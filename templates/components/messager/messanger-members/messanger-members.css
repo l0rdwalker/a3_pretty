@@ -33,6 +33,13 @@
     font: 5px;
 }
 
+#suggested_friend {
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: 14px;
+    opacity: 0.3;
+    color: black;
+}
+
 .hidden_span {
     font: 5px;
     font-family: 'Trebuchet MS', sans-serif;

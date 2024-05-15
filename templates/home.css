@@ -48,7 +48,7 @@ body {
     align-items: stretch;
 }
 
-#main_content_wpr {
+.main_content_wpr {
     flex:6;
 
     display: flex;
@@ -56,11 +56,11 @@ body {
     align-items: stretch;
 }
 
-#dynamic_sidebar {
+.dynamic_sidebar {
     flex: 1;
     margin-top: 5px;
 }
-#dynamic_main {
+.dynamic_main {
     flex: 4;
 
     display: flex;
@@ -72,9 +72,8 @@ body {
     border-right: 1px solid #DDDDDD;
 }
 
-#padding_alt {
+.dynamic_main_padding {
     width: 97%;
     margin-right: 10px;
     height: 98%;
-
 }
