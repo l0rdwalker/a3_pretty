@@ -182,20 +182,6 @@ def get_chatroom_config(message):
     message_json = json.loads(message)
     user_name = message_json['sender']
     emit('recieve_chatrooms',json.dumps({"chat_rooms":db.get_chats_by_username(user_name)}),room=user_aggregator.get_relay_connection_reference(user_name))
-@socketio.on("get_articles")
-def get_articles_config(message):
-    message_json = json.loads(message)
-    user_name = message_json['sender']
-    emit('recieve_articles',json.dumps({"articles":db.get_all_articles()}),room=user_aggregator.get_relay_connection_reference(user_name))
-
-
-
-@socketio.on("get_all_articles")
-def get_all_articles(message):
-    message_json = json.loads(message)
-    all_articles = db.get_all_articles()
-    connection_reference = user_aggregator.get_relay_connection_reference(message_json['sender'])
-    emit('get_all_articles',json.dumps({"articles":all_articles}),room=connection_reference)
 
 @socketio.on('change_chat_name')
 def change_chat_name(message):
@@ -229,3 +215,44 @@ def get_autocomplete_suggestions(message):
     suggestion = db.get_user_suggestion(message_json['entered'],message_json['sender'])
 
     emit("name_suggestion",json.dumps({"suggestion":suggestion}),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
+    
+
+
+###### Article Functions ######
+@socketio.on("get_articles")
+def get_articles_config(message):
+    message_json = json.loads(message)
+    user_name = message_json['sender']
+    emit('recieve_articles',json.dumps({"articles":db.get_all_articles()}),room=user_aggregator.get_relay_connection_reference(user_name))
+
+@socketio.on("get_article_by_id")
+def get_article_by_id(message):
+    message_json = json.loads(message)
+    article = db.get_article_by_id(message_json['article_id'])
+    emit("open_article",json.dumps(article),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
+
+@socketio.on("post_article")
+def post_article(message):
+    message_json = json.loads(message)
+    if (message_json['article']['article_id'] == 'null'):
+        article_id = db.post_article(message_json['article'])
+        get_articles_config(message)
+        message_json['article_id'] = article_id
+        get_article_by_id(json.dumps(message_json))
+    else:
+        db.edit_an_article(message_json['article'])
+        message_json['article_id'] = message_json['article']['article_id']
+        get_article_by_id(json.dumps(message_json))
+    update_everyones_article_list()
+    
+def update_everyones_article_list():
+    all_online_users = user_aggregator.get_all_online_users()
+    for user in all_online_users:
+        get_articles_config(json.dumps({'sender':user}))
+    
+@socketio.on("delete_article")
+def delete_article(message):
+    message_json = json.loads(message)
+    db.delete_article_by_id(message_json['article_id'])
+    update_everyones_article_list()
+    

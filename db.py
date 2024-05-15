@@ -172,7 +172,8 @@ def get_chat_room_by_id(chat_room_id: int):
                 chat_room_messages.append({
                     'from' : message_instance.user_name,
                     'Time' : message_instance.time_sent,
-                    'message' : message_instance.message
+                    'message' : message_instance.message,
+                    'article_id' : chat_room_id
                 })
                 
             chat_room_json_obj['messages'] = chat_room_messages
@@ -257,6 +258,8 @@ def add_user_to_chat(user_name, chat_id):
             session.add(message_instance)
             session.commit()
         
+        
+##### Article Functions ######
 def get_all_articles():
     with Session(engine) as session:
         articles = session.query(articles_obj).all()
@@ -271,3 +274,35 @@ def get_all_articles():
             })
             
         return articles_json_array
+    
+def get_article_by_id(article_id):
+    with Session(engine) as session:
+        article = session.query(articles_obj).filter(articles_obj.article_id == int(article_id)).first()
+        article_json = {
+                'title' : article.title,
+                'content' : article.content,
+                'author' : article.author,
+                'article_id' : article.article_id
+            }
+        return article_json
+    
+def post_article(article):
+    with Session(engine) as session:
+        article = articles_obj(title=article['title'], content=article['content'], author=article['author'])
+        session.add(article)
+        session.commit()
+        return article.article_id
+
+def delete_article_by_id(article_id):
+    with Session(engine) as session:
+        article = session.query(articles_obj).filter(articles_obj.article_id == article_id).first()
+        if not (article == None):
+            session.delete(article)
+            session.commit()
+            
+def edit_an_article(article_json):
+    with Session(engine) as session:
+        article = session.query(articles_obj).filter(articles_obj.article_id == article_json['article_id']).first()
+        article.title = article_json['title']
+        article.content = article_json['content']
+        session.commit()

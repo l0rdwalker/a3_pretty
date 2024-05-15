@@ -24,6 +24,7 @@
         </div>
         <div id="body_wpr">
 
+                {% include './components/articles_sidebar/create_article_overlay/create_article_overlay.jinja' %}
 
             <div class="right_side_line" id="side_bar_wpr">
                 {% include './components/friends-list/friends-list.jinja' %}
@@ -47,7 +48,7 @@
                 </div>
                 <div class="dynamic_main">
                     <div class="dynamic_main_padding">
-                        
+                        {% include './components/articles_main/articles_main.jinja' %}
                     </div>
                 </div>
             </div>

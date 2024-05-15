@@ -30,5 +30,11 @@ class user_manager:
             del self.online_users[user_name]
         else:
             print("User not found")
+            
+    def get_all_online_users(self):
+        online_users = []
+        for key,value in self.online_users.items():
+            online_users.append(key)
+        return online_users
     
     

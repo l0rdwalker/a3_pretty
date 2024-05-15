@@ -1,0 +1,70 @@
+c{% block content %} 
+    <style>
+        {% include './components/articles_main/articles_main.css' %}
+    </style> 
+
+    <script>
+        function OPEN_article(element) {
+            var article_id = element.getAttribute("article_id");
+            socket.emit('get_article_by_id',JSON.stringify({sender: user_name,'article_id':article_id})); 
+        }
+        socket.on("open_article", (msg, color="black") => {
+            article_data = JSON.parse(msg);
+            document.getElementById('article_title_p').innerText = article_data['title'];
+            document.getElementById('extra_details_p').innerText = "Written by " + String(article_data['author']);
+            document.getElementById('article_page_content').innerText = article_data['content'];
+            
+            document.getElementById("main_article_window").setAttribute('article_id',article_data['article_id'])
+
+            if (article_data['author'] == user_name) {
+                document.getElementById("admin_tools").style.display = "";
+            } else {
+                document.getElementById("admin_tools").style.display = "none";
+            }
+            document.getElementById('main_article_window').style.display = '';
+        });
+
+        function delete_article() {
+            var article_id = document.getElementById('main_article_window').getAttribute("article_id");
+            if (article_id != 'none') {
+                socket.emit('delete_article',JSON.stringify({sender: user_name,'article_id':article_id})); 
+            }
+            document.getElementById('main_article_window').style.display = 'none';
+        }
+    </script>
+
+    <div id="main_article_window" style="display: none;" article_id="none" class="main_article_content">
+        <div class="box-d-frame">
+
+            <div class="box-d-header">
+                <div class="title-text"><p id="article_title_p">Article about some stuff</p></div>
+                <div class="info-frame" style="display: flex;">
+                    <div class="author-frame"><p id="extra_details_p">by Author name</p></div>
+                </div>
+            </div>
+
+            <div class="content-frame">
+                <div class="content-box">
+                    <p class="actual_content" id="article_page_content">content displays like this</p>
+                </div>
+
+                <div id="admin_tools">
+                    <div class="buttons-frame" style="display: flex;">
+                        <div onclick="create_new_article(true)" class="generic_btn"><p>MODIFY</p></div>
+                        <div onclick="delete_article()" class="generic_btn"><p>DELETE</p></div>
+                    </div>
+                </div>
+
+                <div class="comments-header" style="display: flex">
+                    <div class="title-text"><p>Comments:</p></div>
+                </div>
+                <div class="comments-frame">
+                    <div class="comments-box"><p>here</p></div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+    
+{% endblock %}
