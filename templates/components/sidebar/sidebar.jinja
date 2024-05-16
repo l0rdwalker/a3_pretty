@@ -21,7 +21,8 @@
                 var element = document.createElement("div");
                 element.innerHTML = `{% include './components/messager/content-cell/content-cell.jinja' %}`;
                 element.querySelector("#chatroom_name_cell").innerText = chat_rooms_array[i]['chat_name'];
-
+                element.querySelector("#chat_preview").innerText = "chat id: " + String(chat_rooms_array[i]['chat_id']);
+                
                 var sub_element = element.querySelector('#content-cell');
                 sub_element.setAttribute("chat_room_id", chat_rooms_array[i]['chat_id']);
 

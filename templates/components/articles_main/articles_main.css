@@ -10,17 +10,30 @@
 .box-d-frame {
     width: 100%; /* Adjust the width as needed */
     height: 100%; /*Adjust the height as needed */
-    border: 0px; /* Border color */
-    /* overflow: hidden; Hide overflow content */
+    
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+    flex-direction: column;
 }
 
 .box-d-header {
-    
     width: 100%;
     height: fit-content;
+
+    display: flex;
+    flex-direction: column;
+}
+
+#admin_tools {
+    flex: 2;
+    width: fit-content;
+    height: fit-content;
+    max-width: fit-content;
 }
 
 .title-text {
+    flex: 5;
     font-weight: bold;
     top: 15%;
     left: 5%;
@@ -36,8 +49,14 @@
     top: 15%;
 }
 
+.box-d-header-title-and-controls {
+    flex:1;
+
+    display: flex;
+}
+
 .info-frame {
-    width: 100%;
+    flex:1;
     height: fit-content;
     margin-bottom: 10px;
     color: #000000;
@@ -74,6 +93,7 @@
 
 .content-frame {
     width: 100%;
+    flex:1;
 }
 
 .content-box {
@@ -87,6 +107,7 @@
 
 .actual_content {
     font-size: 14px;
+    background-color: white;
 }
 
 input[type=text] {
@@ -111,7 +132,7 @@ input[type=text] {
     width: fit-content;
     height: fit-content;
     padding: 10px;
-    margin-top: 5px;
+
     margin-right: 10px;
     background-color: #a6c0cd;
     border-radius: 5px;
@@ -130,6 +151,11 @@ input[type=text] {
 .comments-frame {
     width: 100%;
     margin-top: 20px;
+    height: 100%;
+    
+    display: flex;
+    justify-content: stretch;
+    align-items: stretch;
 }
 
 .comments-box {
@@ -140,3 +166,6 @@ input[type=text] {
     background-color: #ffffff;
 }
 
+.comments-box p {
+    background-color: white;
+}

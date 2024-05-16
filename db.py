@@ -297,6 +297,9 @@ def delete_article_by_id(article_id):
     with Session(engine) as session:
         article = session.query(articles_obj).filter(articles_obj.article_id == article_id).first()
         if not (article == None):
+            comment_objs = session.query(article_comment_obj).filter(article_comment_obj.article_id == article_id).all()
+            for comment_obj in comment_objs:
+                session.delete(comment_obj)
             session.delete(article)
             session.commit()
             
@@ -306,3 +309,26 @@ def edit_an_article(article_json):
         article.title = article_json['title']
         article.content = article_json['content']
         session.commit()
+        
+        
+def post_comment_to_article(comment_json):
+    with Session(engine) as session:
+        comment_obj = article_comment_obj(article_id=comment_json['article_id'],
+                                          comment_msg=comment_json['content'],
+                                          user_name=comment_json['sender'],
+                                          time_posted=datetime.datetime.now().timestamp())
+        session.add(comment_obj)
+        session.commit()
+
+def get_comments_by_article_id(article_id):
+    with Session(engine) as session:
+        comment_objs = session.query(article_comment_obj).filter(article_comment_obj.article_id == article_id).all()
+        comments_json =[]
+        for comment in comment_objs:
+            comments_json.append({
+                'article_id':comment.article_id,
+                'comment_msg':comment.comment_msg,
+                'user_name':comment.user_name,
+                'time_posted':comment.time_posted
+            })
+        return comments_json

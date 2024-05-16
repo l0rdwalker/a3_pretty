@@ -70,3 +70,11 @@ class articles_obj(Base):
     content: Mapped[str] = mapped_column(String)
     author: Mapped[str] = mapped_column(String)
     article_id: Mapped[int] = mapped_column(Integer,primary_key=True, autoincrement=True)
+    
+class article_comment_obj(Base):
+    __tablename__ = "article_comments"
+    article_id: Mapped[str] = mapped_column(Integer)
+    comment_msg: Mapped[str] = mapped_column(String)
+    user_name: Mapped[str] = mapped_column(String)
+    time_posted: Mapped[int] = mapped_column(Integer)
+    comment_id: Mapped[int] = mapped_column(Integer,primary_key=True,autoincrement=True)

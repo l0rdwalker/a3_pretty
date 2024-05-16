@@ -25,13 +25,12 @@
 
         socket.on("name_suggestion", (msg, color="black") => {
             suggested_name = JSON.parse(msg)['suggestion'];
-            console.log(suggested_name);
+ 
             if (suggested_name == null) {
                 document.getElementById("suggested_friend").innerText = "";
             } else {
                 suggested_name = suggested_name.substring(document.getElementById("add_friend_chat").value.length)
                 document.getElementById("suggested_friend").innerText = suggested_name;
-                console.log('huh why no work?');
             }
             if (document.getElementById("add_friend_chat").value.length == 0) {
                 document.getElementById("suggested_friend").innerText = "";
