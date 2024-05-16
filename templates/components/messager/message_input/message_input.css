@@ -14,7 +14,7 @@
 .send_message_btn {
     flex:1;
     max-width: 50px;
-    height: 24px;
+    height: 120%;
     background-color: #a6c0cd;
     display: flex;
     justify-items: center;
