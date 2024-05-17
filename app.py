@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, abort, url_for, Response
 from flask_jwt_extended import JWTManager
 from flask_socketio import SocketIO
+from sqlalchemy.orm import Session
 import db
 import secrets
 from flask import jsonify, request
@@ -22,6 +23,9 @@ app.config['JWT_SECRET_KEY'] = common.hash_string(open(certificatePrivateKey, 'r
 socketio = SocketIO(app)
 jwt = JWTManager(app)
 
+username = ""
+all_users = []
+
 import socket_routes
 
 @app.route("/")
@@ -34,6 +38,8 @@ def login():
 
 @app.route("/login/user", methods=["POST"])
 def login_user():
+    global username
+
     if not request.is_json:
         abort(404)
 
@@ -53,6 +59,9 @@ def signup():
 
 @app.route("/signup/user", methods=["POST"])
 def signup_user():
+    global username
+    global all_users
+
     if not request.is_json:
         abort(404)
 
@@ -64,6 +73,10 @@ def signup_user():
 
     if db.get_user_by_username(username) == None:
         db.insert_user_refactored(user_hash,username)
+        all_users = db.get_all_users()
+        print("returned")
+        for user in all_users:
+            print(f"user is {user.user_name}")
         access_token = create_access_token(identity=username,expires_delta=timedelta(days=1))
         return jsonify(access_token=access_token,error=None,redirect=url_for('home')) 
     else:
@@ -75,7 +88,13 @@ def page_not_found(_):
 
 @app.route("/home")
 def home():
-    return render_template("home.jinja")
+    global all_users
+    all_users = db.get_all_users()
+    print(f"USER: {username}")
+    for user in all_users:
+        print(f"loading user: {user[0]}")
+    user_role = db.get_user_role(username)
+    return render_template("home.jinja", user_role=user_role, all_users=all_users)
 
 if __name__ == '__main__':
     app.jinja_env.auto_reload = True

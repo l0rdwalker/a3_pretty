@@ -47,7 +47,23 @@ def get_user_refactored(user_hash: str):
 def get_user_by_username(user_name: str):
     with Session(engine) as session:
         return session.query(user_refactored_salted).filter(user_refactored_salted.user_name == user_name).first()
-    
+
+def get_user_role(user_name: str):
+    with Session(engine) as session:
+        user = session.query(user_refactored).filter(user_refactored_salted.user_name == user_name).first()
+        if user:
+            return user.user_role
+        else:
+            return 1
+        
+def get_muted_state(user_name: str):
+    with Session(engine) as session:
+        user = session.query(user_refactored).filter(user_refactored_salted.user_name == user_name).first()
+        if user:
+            return user.muted
+        else:
+            return 0
+
 def insert_user_refactored(user_hash,user_name):
     salt = int.from_bytes(os.urandom(8), byteorder="big") & ((1 << 63) - 1)
     salted_hash = common.salt_hash(user_hash,salt)
@@ -124,6 +140,18 @@ def append_friends_relationship(user_name_one,user_name_two):
 def get_all_users():
     with Session(engine) as session:
         all_users = session.query(user_refactored).all()
+        user_dicts = []
+        for user in all_users:
+            temp = []
+            temp.append(user.user_name)
+            temp.append(user.user_role)
+            temp.append(user.muted)
+            user_dicts.append(temp)
+        return user_dicts
+    
+    with Session(engine) as session:
+        all_users = session.query(user_refactored).all()
+        print("IN DB!!")
         return all_users
         
 def get_friends_by_username(user_name:str):

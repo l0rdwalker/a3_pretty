@@ -1,0 +1,67 @@
+
+
+{% block content %} 
+
+    <style>
+        {% include './components/users-list/users-list.css' %}
+    </style> 
+
+    <script>
+        console.log("in users list!")
+
+        console.log(all_users)
+
+        var all_users = "{{ all_users }}";
+        for (var i = 0; i < all_users.length; i++) {
+            var user = all_users[i];
+            console.log(user[0]);  // Print username
+        }
+
+        function clear_users_list() {
+            var elements = document.getElementsByClassName("friend_list_row");
+            while (document.getElementsByClassName("friend_list_row").length > 0) {
+                elements[0].remove();
+                elements = document.getElementsByClassName("friend_list_row");
+            }
+        }
+
+        function update_users_list(all_users) {
+            var users_list = document.getElementById("friends_list_anchor");
+            for (var i = 0; i < all_users.length; i++) {
+                var element = document.createElement('div');
+                element.innerHTML = `{% include './components/users-list/users-list-tile/users-list-tile.jinja' %}`;
+                
+                element.querySelector("#username_text").innerText = all_users[i][0];
+                
+                console.log(all_users[i][0])
+                
+                users_list.appendChild(element);
+            }
+        }
+
+        socket.on("update_friends_list", (msg, color="black") => {
+            //users_list_data = JSON.parse(msg)['users_list']; // Parse and assign before calling the function
+            //clear_users_list();
+            update_users_list(all_users);
+        });
+
+    </script>
+
+        <div class="friends_list_content_container">
+            
+            <div class="side_bar_vertical_container">
+
+                <div class="friend-requests">
+                    <div class="friend-requests-title">
+                        <p class="bold_side_p_text">Users</p>
+                    </div>
+                    
+                </div>
+
+
+            </div>
+        </div>
+
+
+
+{% endblock %}

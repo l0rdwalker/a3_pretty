@@ -1,0 +1,18 @@
+{% block content %} 
+    <style>
+        {% include './components/users-list/user-mute-tile/user-mute-tile.css' %}
+    </style> 
+    
+    <div class="friend_request_list_row">
+        <div class="friend_request_user_name">
+            <div class="username_wpr">
+                <p id="username_request_text">William Walker</p>
+            </div>
+        </div>
+        <div class="friend_request_controls">
+            <div class="request_controls_btn_wpr">
+                {% include './components/users-list/user-mute-tile/mute_btn/mute_btn.jinja' %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

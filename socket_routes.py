@@ -53,6 +53,12 @@ def relay_online_friends_list(user_name:str,notify_friends=True,on_disconnect=Fa
     if (on_disconnect == False):
         emit("update_friends_list",json.dumps({"friends_list":online_friends}),room=user_aggregator.get_relay_connection_reference(user_name))
     
+# def relay_all_users(user_name):
+#     all_users = db.get_all_users()
+#     print("HERE!!")
+#     print(f"ALL: {all_users[0].user_name}")
+#     emit("update_users_list",json.dumps({"users_list":all_users}),room=user_aggregator.get_relay_connection_reference(user_name))
+
 def inform_error(error_msg:str, user_name:str, registered=True): ##Allows us to inform the frontend of any error which might occur. 
     if (registered): 
         emit("error",error_msg,room=user_aggregator.get_relay_connection_reference(user_name)) #if user_name doesn't store connection reference, we must return the connection reference

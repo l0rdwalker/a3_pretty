@@ -17,4 +17,7 @@ class user:
     
     def get_user_name(self):
         return self.user_details.user_name
+    
+    def get_user_role(self):
+        return self.user_details.user_role
         

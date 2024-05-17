@@ -27,7 +27,17 @@
                 {% include './components/articles_sidebar/create_article_overlay/create_article_overlay.jinja' %}
 
             <div class="right_side_line" id="side_bar_wpr">
-                {% include './components/friends-list/friends-list.jinja' %}
+            <script>
+                var user_role = "{{ user_role }}"
+                var all_users = "{{ all_users }}"
+            </script>
+                {% if user_role == 1 or user_role == none %}
+                    {% include './components/friends-list/friends-list.jinja' %}
+                {% else %}
+                    {% with all_users=all_users %}
+                        {% include "./components/users-list/users-list.jinja" %}
+                    {% endwith %}
+                {% endif %}
             </div>
 
             <div style="display: none;" id="messaging_items" class="main_content_wpr">
