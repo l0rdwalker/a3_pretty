@@ -22,6 +22,7 @@
                 
                 element.querySelector('#message-history-content').innerText = messages[i]['message'];
                 element.querySelector('#message-history-username').innerText = messages[i]['from'];
+
                 element.setAttribute("chat_room_id",  messages[i]['from']);
                 message_history_parent.appendChild(element);
             }
@@ -33,15 +34,27 @@
             socket.emit('open_chat',JSON.stringify({sender: user_name, recipient:"", chat_room_id:chat_id})); 
         }
 
+        function ACTIVATE_selected_chat_room(article_id) {
+            var rows = document.getElementsByClassName('content-cell');
+            for (var i = 0; i < rows.length; i++) {
+                rows[i].className = 'content-cell';
+            }
+
+            var selected_element = document.querySelectorAll('div[chat_room_id="'+String(article_id)+'"]')[0];
+            selected_element.className += " selected_content_cell";
+        }
+
         socket.on("open_chat_room", (msg, color="black") => {
             if (msg != 'null') {
                 document.getElementById('messenger_content').style.display = 'flex';
                 chat_room_obj = JSON.parse(msg);
-                console.log(chat_room_obj);
+
                 ACTIVE_CHAT_ID = chat_room_obj['chat_id'];
                 LOAD_chat_title(chat_room_obj['chat_name']);
                 LOAD_message_members(chat_room_obj['members']);
                 LOAD_message_history(chat_room_obj['messages']);
+
+                ACTIVATE_selected_chat_room(ACTIVE_CHAT_ID);
             } else {
                 document.getElementById('messenger_content').style.display = 'none';
             }

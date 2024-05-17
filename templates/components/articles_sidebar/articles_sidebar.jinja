@@ -8,15 +8,14 @@
 
     <script>
         function CLEAR_article_tiles() {
-            while (document.getElementsByClassName("article_content_cell").length > 0) {
-                document.getElementsByClassName("article_content_cell")[0].remove();
+                while (document.getElementsByClassName("article_content_cell").length > 0) {
+                    document.getElementsByClassName("article_content_cell")[0].remove();
             }
         }
 
         function LOAD_article_list(articles_array) {
             CLEAR_article_tiles();
             var article_container = document.getElementById("artile_list_wpr");
-            console.log(articles_array);
             for (var i = 0; i < articles_array.length; i++) {
                 var element = document.createElement('div');
                 

@@ -32,6 +32,10 @@
     margin: auto;
 }
 
+.content_cell_selected {
+    background-color: #dcedf7;
+}
+
 .article_name_wpr {
     margin-top: 7px;
     flex:1;

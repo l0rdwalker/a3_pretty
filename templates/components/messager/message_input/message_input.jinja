@@ -8,7 +8,7 @@
             var parent_element = div_element.parentElement;
             message = parent_element.querySelector("#message_input_textarea").value;
             parent_element.querySelector("#message_input_textarea").value = "";
-            console.log(message);
+
             if (message.length != "") {
                 socket.emit('send_message_to_chat',JSON.stringify({sender: user_name, chat_room_id:ACTIVE_CHAT_ID,message:message}));  
             }

@@ -47,15 +47,19 @@
 
 .add_friend_search {
     flex:1;
-    width: 95%;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     height: 70%;
     margin: 10px;
 }
 
 .add_friend_search input {
-    width: 100%;
+    min-width: 95%;
+
     padding: 12px 12px;
-    margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;

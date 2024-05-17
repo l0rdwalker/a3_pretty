@@ -20,6 +20,9 @@ except ImportError:
     from app import socketio
 import db
 
+
+### For anyone who trys to change or add anything. Please know. I am so, so sorry. 
+
 user_aggregator = user_manager()
 
 def validate_user_content(user_name, user_hash): #Foundational security check, used in the the login process. 
@@ -154,6 +157,7 @@ def send_friend_request_response(message):
             
 @socketio.on("new_chat_room")
 def create_new_chat_room(message):
+    ### MUTE CHECK ###
     message_json = json.loads(message)
     if db.is_valid_username(message_json['sender']):
         chat_room_id = db.create_new_chatroom(message_json['sender'])
@@ -169,6 +173,7 @@ def send_chat_room(message):
 
 @socketio.on("add_user_to_chat")
 def add_user_to_chat(message):
+    ### MUTE CHECK ###
     message_json = json.loads(message)
     if (db.is_valid_username(message_json['sender']) and db.is_valid_username(message_json['add_user'])):
         if (db.is_valid_chatroomid(message_json['chat_room_id'])):
@@ -177,6 +182,7 @@ def add_user_to_chat(message):
 
 @socketio.on("send_message_to_chat")
 def send_messaage_to_chat(message):
+    ### MUTE CHECK ###
     message_json = json.loads(message)
     if db.is_valid_username(message_json['sender']) and db.is_valid_chatroomid(message_json['chat_room_id']):
         db.add_message_to_chat(message_json['sender'],message_json['message'],message_json['chat_room_id'])
@@ -193,7 +199,6 @@ def get_chatroom_config(message):
 def change_chat_name(message):
     message_json = json.loads(message)
     db.set_chat_name(int(message_json['chat_id']),message_json['new_chat_name'])
-    
     update_chat_for_relevent_online_users(message_json['chat_id'])
     
 def update_chat_for_relevent_online_users(chat_id):
@@ -236,9 +241,11 @@ def get_article_by_id(message):
     message_json = json.loads(message)
     article = db.get_article_by_id(message_json['article_id'])
     emit("open_article",json.dumps(article),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
+    get_comments_by_article_id(message)
 
 @socketio.on("post_article")
 def post_article(message):
+    ### MUTE CHECK ###
     message_json = json.loads(message)
     if (message_json['article']['article_id'] == 'null'):
         article_id = db.post_article(message_json['article'])
@@ -249,6 +256,11 @@ def post_article(message):
         db.edit_an_article(message_json['article'])
         message_json['article_id'] = message_json['article']['article_id']
         get_article_by_id(json.dumps(message_json))
+
+        online_users = user_aggregator.get_all_online_users()
+        for user in online_users:
+            get_article_by_id(json.dumps({'article_id':message_json['article_id'],'sender':user}))
+        
     update_everyones_article_list()
     
 def update_everyones_article_list():
@@ -261,4 +273,27 @@ def delete_article(message):
     message_json = json.loads(message)
     db.delete_article_by_id(message_json['article_id'])
     update_everyones_article_list()
+    hide_deleted_article_from_users(message_json['article_id'])
+
+def hide_deleted_article_from_users(article_id):
+    online_users = user_aggregator.get_all_online_users()
+    for user in online_users:
+        emit('inform_deleted_article',json.dumps({"article_id":article_id}),room=user_aggregator.get_relay_connection_reference(user))
     
+@socketio.on("post_comment")
+def post_comment(message):
+    message_json = json.loads(message)
+    if not (message_json['article_id'] == None):
+        db.post_comment_to_article(message_json)
+        update_everyones_comment_section(message_json['article_id'])
+        
+def update_everyones_comment_section(article_id):
+    online_users = user_aggregator.get_all_online_users()
+    for user in online_users:
+        get_comments_by_article_id(json.dumps({'sender':user,'article_id':article_id}))
+
+@socketio.on("get_comments_by_article_id")
+def get_comments_by_article_id(message):
+    message_json = json.loads(message)
+    comments = db.get_comments_by_article_id(message_json['article_id'])
+    emit("get_article_comments",json.dumps({'article_id':message_json['article_id'],'comments':comments}),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
