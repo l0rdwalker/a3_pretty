@@ -70,6 +70,7 @@ def signup_user():
 
     if db.get_user_by_username(username) == None:
         db.insert_user_refactored(user_hash,username)
+
         access_token = create_access_token(identity=username,expires_delta=timedelta(days=1))
         return jsonify(access_token=access_token,error=None,redirect=url_for('home')) 
     else:

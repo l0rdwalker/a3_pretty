@@ -56,11 +56,19 @@ def relay_online_friends_list(user_name:str,notify_friends=True,on_disconnect=Fa
     if (on_disconnect == False):
         emit("update_friends_list",json.dumps({"friends_list":online_friends}),room=user_aggregator.get_relay_connection_reference(user_name))
     
-# def relay_all_users(user_name):
-#     all_users = db.get_all_users()
-#     print("HERE!!")
-#     print(f"ALL: {all_users[0].user_name}")
-#     emit("update_users_list",json.dumps({"users_list":all_users}),room=user_aggregator.get_relay_connection_reference(user_name))
+#route name is relay_all_users
+@socketio.on('relay_all_users')
+def relay_all_users(user_name):
+    all_users = db.get_all_users()
+    user_name_json = json.loads(user_name)
+   # print(f"ALL: {all_users[0].user_name}")
+    emit("update_users_list",json.dumps({"users_list":all_users}),room=user_aggregator.get_relay_connection_reference(user_name_json["sender"]))
+
+
+def user_sign_up_update():
+    online_users = user_aggregator.get_all_online_users()
+    for users in online_users:
+        relay_all_users(json.dumps({"sender":users}))
 
 def inform_error(error_msg:str, user_name:str, registered=True): ##Allows us to inform the frontend of any error which might occur. 
     if (registered): 
@@ -104,6 +112,7 @@ def connect(): #Main method which establishes connection to oncoming users
             
             relay_friend_requests(user_name)
             relay_online_friends_list(user_name)
+            user_sign_up_update()
     else:
         inform_error("Invalid connection credentials",request.sid,registered=False)
 

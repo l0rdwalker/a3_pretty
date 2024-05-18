@@ -9,41 +9,51 @@
     <script>
         console.log("in users list!")
 
-        console.log(all_users)
-
-        var all_users = "{{ all_users }}";
-        for (var i = 0; i < all_users.length; i++) {
-            var user = all_users[i];
-            console.log(user[0]);  // Print username
-        }
-
         function clear_users_list() {
-            var elements = document.getElementsByClassName("friend_list_row");
-            while (document.getElementsByClassName("friend_list_row").length > 0) {
-                elements[0].remove();
-                elements = document.getElementsByClassName("friend_list_row");
+            //document.getElementsByClassName
+            //class returns a list of elements
+
+            user_entries = document.getElementsByClassName("user_entries");
+
+            while(user_entries.length != 0) {
+                var element = user_entries[0];
+                element.remove();
+
+                user_entries = document.getElementsByClassName("user_entries");
             }
+
+            //have a while loop, check how many elements in the getElementsbyClassname, and remove until it hits zero
+
         }
 
-        function update_users_list(all_users) {
-            var users_list = document.getElementById("friends_list_anchor");
-            for (var i = 0; i < all_users.length; i++) {
-                var element = document.createElement('div');
-                element.innerHTML = `{% include './components/users-list/users-list-tile/users-list-tile.jinja' %}`;
-                
-                element.querySelector("#username_text").innerText = all_users[i][0];
-                
-                console.log(all_users[i][0])
-                
-                users_list.appendChild(element);
+        function update_users_list(user_request_data) {
+            var length = user_request_data.length;
+
+            console.log("in update");
+
+            for(var i = 0; i < length; i++) {
+                console.log("in for");
+                console.log(user_request_data[i]);
+                var new_element = document.createElement('div');
+                //new_element.innerText = "hello";
+                new_element.innerHTML = "<h1 class='user_entries' style='background-color:black;'>" + user_request_data[i][0] + "</h1>";
+                var parent_element = document.getElementById("friend-rq-title");
+                parent_element.appendChild(new_element);
             }
+
         }
 
-        socket.on("update_friends_list", (msg, color="black") => {
-            //users_list_data = JSON.parse(msg)['users_list']; // Parse and assign before calling the function
-            //clear_users_list();
-            update_users_list(all_users);
+        socket.on("update_users_list", (msg, color="black") => {
+            console.log("hereeee");
+            user_request_data = JSON.parse(msg)['users_list']; // Parse and assign before calling the function
+            console.log(user_request_data);
+            console.log(user_request_data[0][0]);
+            clear_users_list();
+            update_users_list(user_request_data);
         });
+
+        //try to emit 
+        socket.emit('relay_all_users', JSON.stringify({sender: user_name}));  
 
     </script>
 
@@ -52,8 +62,10 @@
             <div class="side_bar_vertical_container">
 
                 <div class="friend-requests">
-                    <div class="friend-requests-title">
+
+                    <div class="friend-requests-title" id="friend-rq-title">
                         <p class="bold_side_p_text">Users</p>
+                        
                     </div>
                     
                 </div>

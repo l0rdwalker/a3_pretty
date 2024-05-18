@@ -36,12 +36,13 @@
 
                 {% include './components/articles_sidebar/create_article_overlay/create_article_overlay.jinja' %}
 
+            
             <div class="right_side_line" id="side_bar_wpr">
             <script>
                 var user_role = "{{ user_role }}"
                 var all_users = "{{ all_users }}"
             </script>
-                {% if user_role == 1 or user_role == none %}
+                {% if user_role == 1 %}
                     {% include './components/friends-list/friends-list.jinja' %}
                 {% else %}
                     {% with all_users=all_users %}
