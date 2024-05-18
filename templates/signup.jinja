@@ -5,14 +5,36 @@ Sign up page, pretty much the same as login.
 
 
 {% block content %} 
-    <h1>Sign Up</h1>
-    <p>User_pog_name</p>
-    <input id="username"/>
-    <p>Password</p>
-    <input id="password" type="password"/>
-    <button onclick="signup()">Sign up</button>
+
+    <style>
+        {% include 'sign-up.css' %}
+    </style> 
+
+    <center>
+        <div class = "login-title">
+            |___SIGN UP___|
+        </div>
+        <div class = "login-frame">
+            <div class = "username-title">
+                Username:
+            </div>
+            <input type="text" class="username-text-in" id="username" placeholder="Enter your username">
+            <div class = "password-title">
+                Password:
+            </div>
+            <input type="password" class="password-text-in" id="password" placeholder="Enter your password">
+            <div class="image-frame">
+                <img src="./templates/components/welcome_to_site.gif" alt="welcome!" width="250">
+            </div>
+        </div>
+        <br></br>
+        <button class="login-button" onclick="signup()">SIGN UP</button>
+    </center>
 
     <script>
+        document.getElementById("username").value = "3wr4etgefwqefrgt";
+        document.getElementById("password").value = "dsfgn;klmerfd234242";
+
          function isValidURL(string) {
             if (string.length == 0) {
                 return false;
@@ -49,21 +71,26 @@ Sign up page, pretty much the same as login.
 
         async function signup() {
             let sign_up_url = "{{ url_for('signup_user') }}";
-
+            console.log("asd");
             let password_error = validate_credentials($("#username").val(),$("#password").val());
 
             if (password_error.length == 0) {
                 let user_hash = await sha256($("#username").val()+$("#password").val());
                 let shhh_key  = await sha256($("#password").val());
-
+                console.log("hoy");
                 sessionStorage.setItem("key", shhh_key);
                 sessionStorage.setItem("user_hash", user_hash);
                 sessionStorage.setItem("username", $("#username").val());
 
-                let res = await axios.post(sign_up_url, {
+                console.log("here");
+                console.log(sign_up_url);
+                console.log($("#username").val())
+
+                let res = await axios.post("https://lunaca:5000/signup/user", {
                     username: $("#username").val(),
                     user_hash: user_hash
-                });
+                }); 
+                console.log("after res\n");
                 
                 if (res.data['error'] == null) {
                     sessionStorage.setItem('token',res.data['access_token']);

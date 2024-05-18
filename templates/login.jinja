@@ -1,13 +1,31 @@
 {% extends 'base.jinja' %}
 
 {% block content %} 
-    <h1>Login</h1>
-    <p>Username</p>
-    <input id="username"/>
-    <p>Password</p>
-    <input id="password"  type="password"/>
-    <button onclick="login()">Login</button>
 
+    <style>
+        {% include 'login.css' %}
+    </style> 
+
+        <center>
+            <div class = "login-title">
+                |___LOGIN___|
+            </div>
+            <div class = "login-frame">
+                <div class = "username-title">
+                    Username:
+                </div>
+                <input type="text" class="username-text-in" id="username" placeholder="Enter your username">
+                <div class = "password-title">
+                    Password:
+                </div>
+                <input type="password" class="password-text-in" id="password" placeholder="Enter your password">
+                <div class="image-frame">
+                    <img src="./templates/components/welcome_back.gif" alt="welcome back!" width="250">
+                </div>
+            </div>
+            <br></br>
+            <button class="login-button" onclick="login()">LOGIN</button>
+        </center>
     <script>
         function isValidURL(string) {
             if (string.length == 0) {
@@ -29,7 +47,7 @@
             sessionStorage.setItem("key", secret_key);
             sessionStorage.setItem("user_hash", user_hash);
             sessionStorage.setItem("username", $("#username").val());
-            
+            console.log($("#username").val());
             let res = await axios.post(loginURL, {
                 username: $("#username").val(),
                 user_hash: user_hash

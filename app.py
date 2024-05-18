@@ -59,9 +59,6 @@ def signup():
 
 @app.route("/signup/user", methods=["POST"])
 def signup_user():
-    global username
-    global all_users
-
     if not request.is_json:
         abort(404)
 
