@@ -3,6 +3,12 @@
         {% include './components/header/header.css' %}
     </style>
 
+    <script>
+        function log_off() {
+            window.location.replace("https://127.0.0.1:5000");
+        }
+    </script>
+
     <div class="header">
         <div class="logo-container">
             <div class="header_logo">
@@ -18,10 +24,9 @@
 
         </div>
         <div class="notification-container">
-            <div class="svg-wpr">
-                <svg width="25px" height="25px" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18.9,11.2s0-8.7-6.9-8.7-6.9,8.7-6.9,8.7v3.9L2.5,17.5h19l-2.6-2.4Z" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
-                    <path d="M14.5,20.5s-.5,1-2.5,1-2.5-1-2.5-1" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>        
+            <div onclick="log_off()" class="svg-wpr">
+                <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px" viewBox="0 0 15 15" fill="none">
+                    <path d="M13.5 7.5L10.5 10.75M13.5 7.5L10.5 4.5M13.5 7.5L4 7.5M8 13.5H1.5L1.5 1.5L8 1.5" stroke="white"/>
                 </svg>
             </div>
         </div>

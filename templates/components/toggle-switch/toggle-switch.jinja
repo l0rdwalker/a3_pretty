@@ -42,8 +42,8 @@
         get_state(state);
     </script>
             
-    <div id="toggle-page-wpr" class="toggle-wpr">
-        <div onclick="switch_state(this)" class="toggle">
+    <div onclick="switch_state(this)" id="toggle-page-wpr" class="toggle-wpr">
+        <div class="toggle">
             <div class="switch_division">
                 <p>Chatroom</p>
             </div>
@@ -51,6 +51,6 @@
                 <p>Articles</p>
             </div>
         </div>
-        <div onclick="switch_state(this)" id="main_slide_btn" class="btn"></div>
+        <div id="main_slide_btn" class="btn"></div>
     </div> 
 {% endblock %}

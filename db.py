@@ -269,12 +269,11 @@ def get_user_suggestion(entered_text,user_name):
             #input = f'{entered_text}%'
             #user = session.query(user_refactored).filter(user_refactored.user_name.like(input)).first()
             friends = get_friends_by_username(user_name)
-            user = None
+            users = []
             for friend in friends:
                 if friend.startswith(entered_text):
-                    user = friend
-                    break
-            return user
+                    users.append(friend)
+            return users
     except:
         return None
 

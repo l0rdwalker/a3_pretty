@@ -16,6 +16,16 @@
         document.cookie = "user_hash="+user_hash;
 
         var socket = io();
+
+        socket.on("error", (msg, color="black") => {
+            console.log(msg);
+            alert(msg);
+            window.location.replace("https://127.0.0.1:5000");
+        });
+
+        window.addEventListener('beforeunload', function (event) {
+            socket.emit('disconnect');
+        });
     </script>
 
     <body>

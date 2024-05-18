@@ -78,7 +78,6 @@ def jwt_token_check(token):
 @socketio.on('user_search_get_all')
 def user_search_list(message):
     message_json = json.loads(message)
-    
     user_name = message_json["sender"]
     
     existing_friends = db.get_friends_by_username(user_name)
@@ -87,9 +86,8 @@ def user_search_list(message):
     sent_requests = db.get_friend_sent_requests(user_name)
     
     for x in range(0,len(all_users_objs)):
-        if not (all_users_objs[x].user_name in existing_friends) and not (all_users_objs[x].user_name == user_name):
-            all_users_array.append([all_users_objs[x].user_name,all_users_objs[x].user_name in sent_requests])
-    
+        if not (all_users_objs[x][0] in existing_friends) and not (all_users_objs[x][0] == user_name):
+            all_users_array.append([all_users_objs[x][0],all_users_objs[x][0] in sent_requests])
     emit("user_search_get_all",json.dumps({"users":all_users_array}),room=user_aggregator.get_relay_connection_reference(user_name))
 
 @socketio.on('connect')
@@ -108,8 +106,6 @@ def connect(): #Main method which establishes connection to oncoming users
             relay_online_friends_list(user_name)
     else:
         inform_error("Invalid connection credentials",request.sid,registered=False)
-
-
 
 @socketio.on('disconnect')
 def manage_disconnect(): #Manages user disconnections

@@ -1,5 +1,5 @@
 .toggle-wpr {
-    width: 100px;
+    width: 200px;
     height: 20px;
     margin: auto;
     margin-top: 6.8px;
@@ -19,8 +19,8 @@
     width: 100%;
 }
 .switch_division p {
-    margin-top: 7px;
-    font-size: 7px;
+    margin-top: 3.5px;
+    font-size: 13px;
     text-align: center;
 }
 

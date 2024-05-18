@@ -58,3 +58,10 @@
 .chat-user input p {
     padding: 0px;
 }
+
+.suggestion:hover {
+    background-color: #dcedf7;
+}
+.suggestion:active {
+    background-color: #c3d7e2;
+}
