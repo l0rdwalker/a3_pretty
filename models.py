@@ -27,9 +27,9 @@ class user_refactored(Base):
     
     user_hash: Mapped[str] = mapped_column(String, primary_key=True)
     user_name: Mapped[str] = mapped_column(String)
-    user_role: Mapped[int] = mapped_column(Integer)
+    user_role: Mapped[int] = mapped_column(Integer,default=1)
     # 1 = student, 2 = academic, 3 = administrative, 4 = admin
-    muted: Mapped[int] = mapped_column(Integer)
+    muted: Mapped[int] = mapped_column(Integer,default=0)
     # 0 = unmuted, 1 = muted
     
 class user_refactored_salted(user_refactored):

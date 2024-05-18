@@ -59,9 +59,6 @@ def signup():
 
 @app.route("/signup/user", methods=["POST"])
 def signup_user():
-    global username
-    global all_users
-
     if not request.is_json:
         abort(404)
 
@@ -73,10 +70,6 @@ def signup_user():
 
     if db.get_user_by_username(username) == None:
         db.insert_user_refactored(user_hash,username)
-        all_users = db.get_all_users()
-        print("returned")
-        for user in all_users:
-            print(f"user is {user.user_name}")
         access_token = create_access_token(identity=username,expires_delta=timedelta(days=1))
         return jsonify(access_token=access_token,error=None,redirect=url_for('home')) 
     else:
@@ -90,9 +83,6 @@ def page_not_found(_):
 def home():
     global all_users
     all_users = db.get_all_users()
-    print(f"USER: {username}")
-    for user in all_users:
-        print(f"loading user: {user[0]}")
     user_role = db.get_user_role(username)
     return render_template("home.jinja", user_role=user_role, all_users=all_users)
 
