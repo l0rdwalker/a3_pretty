@@ -24,7 +24,8 @@ Sign up page, pretty much the same as login.
             </div>
             <input type="password" class="password-text-in" id="password" placeholder="Enter your password">
             <div class="image-frame">
-                <img src="./templates/components/welcome_to_site.gif" alt="welcome!" width="250">
+                <img src="{{ url_for('static', filename='images/welcome_to_site.gif') }}" alt="welcome!" width="250">
+                
             </div>
         </div>
         <br></br>
