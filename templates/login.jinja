@@ -47,7 +47,7 @@
             sessionStorage.setItem("key", secret_key);
             sessionStorage.setItem("user_hash", user_hash);
             sessionStorage.setItem("username", $("#username").val());
-            console.log($("#username").val());
+
             let res = await axios.post(loginURL, {
                 username: $("#username").val(),
                 user_hash: user_hash

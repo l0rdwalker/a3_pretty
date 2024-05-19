@@ -69,26 +69,20 @@ Sign up page, pretty much the same as login.
 
         async function signup() {
             let sign_up_url = "{{ url_for('signup_user') }}";
-            console.log("asd");
             let password_error = validate_credentials($("#username").val(),$("#password").val());
 
             if (password_error.length == 0) {
                 let user_hash = await sha256($("#username").val()+$("#password").val());
                 let shhh_key  = await sha256($("#password").val());
-                console.log("hoy");
+
                 sessionStorage.setItem("key", shhh_key);
                 sessionStorage.setItem("user_hash", user_hash);
                 sessionStorage.setItem("username", $("#username").val());
-
-                console.log("here");
-                console.log(sign_up_url);
-                console.log($("#username").val())
 
                 let res = await axios.post("https://lunaca:5000/signup/user", {
                     username: $("#username").val(),
                     user_hash: user_hash
                 }); 
-                console.log("after res\n");
                 
                 if (res.data['error'] == null) {
                     sessionStorage.setItem('token',res.data['access_token']);

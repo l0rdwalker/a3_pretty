@@ -362,9 +362,16 @@ def get_comments_by_article_id(article_id):
                 'article_id':comment.article_id,
                 'comment_msg':comment.comment_msg,
                 'user_name':get_user_by_username_array(comment.user_name),
-                'time_posted':comment.time_posted
+                'time_posted':comment.time_posted,
+                'comment_id':comment.comment_id
             })
         return comments_json
+    
+def delete_comment_by_id(comment_id):
+    with Session(engine) as session:
+        comment_obj = session.query(article_comment_obj).filter(article_comment_obj.comment_id == comment_id).first()
+        session.delete(comment_obj)
+        session.commit()
     
 def update_user_role(user_name,user_role):
     with Session(engine) as session:
@@ -387,5 +394,6 @@ def is_not_mute(user_name):
     
 def get_user_status(user_name):
     with Session(engine) as session:
-        user = session.query(user_refactored).filter(user_refactored.user_name == user_name).first()
-        return user.user_role
+        if (user_name != None):
+            user = session.query(user_refactored).filter(user_refactored.user_name == user_name).first()
+            return user.user_role

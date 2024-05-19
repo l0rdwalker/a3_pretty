@@ -19,8 +19,6 @@
             for (var i = 0; i < messages.length; i++) {
                 var element = document.createElement("div");
                 element.innerHTML = `{% include './components/messager/message-history/message-history.jinja' %}`;
-                
-                console.log(messages[i]['from']);
 
                 element.querySelector('#message-history-content').innerText = messages[i]['message'];
                 element.querySelector('#message_history_user_tag').innerHTML = create_user_tag(messages[i]['from'][0],messages[i]['from'][1]).innerHTML;

@@ -4,6 +4,7 @@
     </style>
 
     <script>
+        var user_public_status = null;
         function log_off() {
             window.location.replace("https://127.0.0.1:5000");
         }
@@ -14,6 +15,7 @@
 
         socket.on("get_user_status", (msg, color="black") => {
             var status = JSON.parse(msg)['status'];
+            user_public_status = status;
             if (status == 1) {
                 document.getElementById('admin_user_perms').style.display = 'none';
             } else {

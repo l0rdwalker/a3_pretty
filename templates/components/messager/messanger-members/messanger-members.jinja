@@ -88,6 +88,9 @@
         }
 
         function add_user_to_chat_drop_down(element) {
+            event.stopPropagation();
+            event.preventDefault();
+            
             var new_user = element.querySelector("#auto_dropdown_selection").innerText;
             
             CLEAR_alt_suggestions_dropdown();

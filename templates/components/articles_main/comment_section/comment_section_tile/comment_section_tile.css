@@ -1,15 +1,44 @@
-.comment_message {
-    width: 100%;
-    height: fit-content;
-    align-items: center; 
+
+.comment_vertical_divide {
     display: flex;
-    margin-bottom: 6px;
-    flex-direction: column;
-    padding: 5px;
+    justify-content: stretch;
+    flex-direction: row;
     background-color: #e3f5ff;
     border-radius: 10px;
+
+    margin-bottom: 10px;
+}
+
+.delete_comment_wpr {
+    flex: 1;
+    padding: 10px;
+}
+
+.delete_comment_wpr svg:hover{
+    width: 22px;
+    height: 22px;
+}
+.delete_comment_wpr svg:active{
+    width: 18px;
+    height: 18px;
+}
+
+
+
+
+.comment_message {
+    flex: 35;
+
+    width: 100%;
+    height: fit-content;
+    margin-bottom: 6px;
+    padding: 5px;
     padding-top: 10px;
     padding-bottom: 10px;
+
+    display: flex;
+    align-items: center; 
+    flex-direction: column;
 }
 
 .comment-sender {

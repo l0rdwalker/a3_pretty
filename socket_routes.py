@@ -335,7 +335,13 @@ def post_comment(message):
             update_everyones_comment_section(message_json['article_id'])
     else:
         inform_error("You cannot post commented when muted",request.sid,registered=False)
-        
+
+@socketio.on("delete_post_by_id")
+def delete_post_by_id(message):
+    message_json = json.loads(message)
+    db.delete_comment_by_id(int(message_json['comment_id']))
+    update_everyones_comment_section(message_json['article_id'])
+
 def update_everyones_comment_section(article_id):
     online_users = user_aggregator.get_all_online_users()
     for user in online_users:

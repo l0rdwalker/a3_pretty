@@ -21,7 +21,6 @@
                 var element = document.createElement('div');
                 element.innerHTML = `{% include './components/friends-list/friends_list_tile/friends_list_tile.jinja' %}`;
 
-                console.log(users[i][0][0],users[i][0][1],'friends list');
                 var user_tag = create_user_tag(users[i][0][0],users[i][0][1]);
                 element.querySelector("#username_text").parentElement.innerHTML = user_tag.innerHTML;
 

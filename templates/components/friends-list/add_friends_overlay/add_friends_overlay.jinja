@@ -59,13 +59,11 @@
 
         function send_friend_request(element) {
             var recipient = element.parentNode.parentNode.querySelector("#user_tag_name").innerText;
-            console.log(recipient);
             socket.emit('send_friend_request',JSON.stringify({sender: user_name, recipient:recipient, message:""})); 
         }
 
         function cancel_friend_request(element) {
             var recipient = element.parentNode.parentNode.querySelector("#user_tag_name").innerText;
-            console.log(element);
             socket.emit('cancel_friend_request',JSON.stringify({sender: user_name, recipient:recipient, message:""}));
         }
     </script>
