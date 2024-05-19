@@ -1,4 +1,4 @@
-.add_friend_overlay {
+.user_perms_overlay {
     position: absolute;
     height:100%;
     width:100%;
@@ -10,7 +10,7 @@
     justify-content: center;
 }
 
-.add_friend_window {
+.user_perms_window {
     flex:1;
     max-width: 50%;
     min-width: 500px;
@@ -23,22 +23,24 @@
     flex-direction: column;
 }
 
-.add_friend_results_wpr {
+.user_perms_results_wpr {
     flex:1;
     width: 100%;
     height: fit-content;
     background-color: rgb(233, 233, 233);
 }
 
-.add_friend_search_wpr {
+.user_perms_search_wpr {
     flex: 1; 
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
+    min-width: 90%;
+    max-width: 90%;
 }
 
-.add_friend_results {
+.user_perms_results {
     flex: 6;
     display: flex;
     justify-content: center;
@@ -46,7 +48,7 @@
     overflow-y: scroll;
 }
 
-.add_friend_search {
+.user_perms_search {
     flex:1;
     
     display: flex;
@@ -72,9 +74,4 @@
 
 .add_friend_search p {
     margin-left:5px;
-}
-
-#user_name_add_tile {
-    width: fit-content;
-    margin-left: 20px;
 }

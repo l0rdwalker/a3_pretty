@@ -63,8 +63,14 @@
 }
 
 .author-frame {
-    width: 200px;
+    width: fit-content;
     font-size: 17px;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+}
+#written_by_static {
+    margin-right: 5px;
 }
 
 

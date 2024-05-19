@@ -38,7 +38,7 @@
                     element.innerHTML = `{% include './components/friends-list/add_friends_overlay/user_tile_send_request/user_tile_send_request.jinja' %}`;
                 }
                 
-                element.querySelector("#user_name_add_tile").innerText = user_search[i][0];
+                element.querySelector("#user_name_add_tile").innerHTML = create_user_tag(user_search[i][0][0],user_search[i][0][1]).innerHTML;
                 results.appendChild(element);
             }
         }
@@ -47,24 +47,26 @@
             var all_users = JSON.parse(msg)['users'];
             var filtered_users = [];
             var input_value = document.getElementById('filter_text_element').value;
-
+  
             for (var i = 0; i < all_users.length; i++) {
-                if (all_users[i][0].includes(input_value)) {
+                if (all_users[i][0][0].includes(input_value)) {
                     filtered_users.push(all_users[i]);
                 }
             }
-
+        
             construct_friend_search_results(filtered_users);
         })
 
         function send_friend_request(element) {
-            var recipient = element.parentNode.parentNode.querySelector("#user_name_add_tile").innerText;
+            var recipient = element.parentNode.parentNode.querySelector("#user_tag_name").innerText;
+            console.log(recipient);
             socket.emit('send_friend_request',JSON.stringify({sender: user_name, recipient:recipient, message:""})); 
         }
 
         function cancel_friend_request(element) {
-            var recipient = element.parentNode.parentNode.querySelector("#user_name_add_tile").innerText;
-            socket.emit('cancel_friend_request',JSON.stringify({sender: user_name, recipient:recipient, message:""}))
+            var recipient = element.parentNode.parentNode.querySelector("#user_tag_name").innerText;
+            console.log(element);
+            socket.emit('cancel_friend_request',JSON.stringify({sender: user_name, recipient:recipient, message:""}));
         }
     </script>
 

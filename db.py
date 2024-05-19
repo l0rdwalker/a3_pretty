@@ -47,6 +47,17 @@ def get_user_refactored(user_hash: str):
 def get_user_by_username(user_name: str):
     with Session(engine) as session:
         return session.query(user_refactored_salted).filter(user_refactored_salted.user_name == user_name).first()
+    
+def get_user_by_username_array(user_name: str):
+    with Session(engine) as session:
+        user = session.query(user_refactored_salted).filter(user_refactored_salted.user_name == user_name).first()
+        
+        array_list = []
+        array_list.append(user.user_name)
+        array_list.append(user.user_role)
+        array_list.append(user.muted)
+        
+        return array_list
 
 def get_user_role(user_name: str):
     with Session(engine) as session:
@@ -86,9 +97,9 @@ def get_friend_requests(user_name):
         sent_requests = session.query(friend_request).filter(friend_request.sender == user_name).all()
         just_names = []
         for request in requests:
-            just_names.append([request.sender,'request'])
+            just_names.append([get_user_by_username_array(request.sender),'request'])
         for request in sent_requests:
-            just_names.append([request.sender,'pending'])
+            just_names.append([get_user_by_username_array(request.sender),'pending'])
         return just_names
     
 def get_friend_sent_requests(user_name):
@@ -149,11 +160,6 @@ def get_all_users():
             user_dicts.append(temp)
         return user_dicts
     
-    with Session(engine) as session:
-        all_users = session.query(user_refactored).all()
-        print("IN DB!!")
-        return all_users
-        
 def get_friends_by_username(user_name:str):
     if (is_valid_username(user_name)):
         with Session(engine) as session:
@@ -198,7 +204,7 @@ def get_chat_room_by_id(chat_room_id: int):
             chat_room_message_obj = session.query(message_obj).filter(message_obj.chat_id == chat_room_id).all()
             for message_instance in chat_room_message_obj:
                 chat_room_messages.append({
-                    'from' : message_instance.user_name,
+                    'from' : get_user_by_username_array(message_instance.user_name),
                     'Time' : message_instance.time_sent,
                     'message' : message_instance.message,
                     'article_id' : chat_room_id
@@ -355,7 +361,31 @@ def get_comments_by_article_id(article_id):
             comments_json.append({
                 'article_id':comment.article_id,
                 'comment_msg':comment.comment_msg,
-                'user_name':comment.user_name,
+                'user_name':get_user_by_username_array(comment.user_name),
                 'time_posted':comment.time_posted
             })
         return comments_json
+    
+def update_user_role(user_name,user_role):
+    with Session(engine) as session:
+        user = session.query(user_refactored).filter(user_refactored.user_name == user_name).first()
+        user.user_role = user_role
+        session.commit()
+        
+def update_user_mute(user_name,mute_status):
+    with Session(engine) as session:
+        user = session.query(user_refactored).filter(user_refactored.user_name == user_name).first()
+        user.muted = mute_status
+        session.commit()
+        
+def is_not_mute(user_name):
+    with Session(engine) as session:
+        user = session.query(user_refactored).filter(user_refactored.user_name == user_name).first()
+        if (user.muted):
+            return False
+        return True
+    
+def get_user_status(user_name):
+    with Session(engine) as session:
+        user = session.query(user_refactored).filter(user_refactored.user_name == user_name).first()
+        return user.user_role

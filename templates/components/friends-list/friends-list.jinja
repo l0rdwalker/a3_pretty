@@ -21,7 +21,9 @@
                 var element = document.createElement('div');
                 element.innerHTML = `{% include './components/friends-list/friends_list_tile/friends_list_tile.jinja' %}`;
 
-                element.querySelector("#username_text").innerText = users[i][0];
+                console.log(users[i][0][0],users[i][0][1],'friends list');
+                var user_tag = create_user_tag(users[i][0][0],users[i][0][1]);
+                element.querySelector("#username_text").parentElement.innerHTML = user_tag.innerHTML;
 
                 if (users[i][1]) {
                     element.querySelector("#online-offline").className = "online";   
@@ -39,8 +41,6 @@
             update_friends_list(friend_request_data);
         });
 
-        
-
         function clear_friend_requests_list() {
             while (document.getElementsByClassName("friend_request_list_row").length != 0) {
                 document.getElementsByClassName("friend_request_list_row")[0].remove(0);
@@ -53,7 +53,7 @@
                 if (requests[i][1] != "pending") {
                     var element = document.createElement("div");
                     element.innerHTML = `{% include './components/friends-list/friends_request_tile/friends_request_tile.jinja' %}`;
-                    element.querySelector("#username_request_text").innerText = requests[i][0];
+                    element.querySelector("#username_request_text").innerHTML = create_user_tag(requests[i][0][0],requests[i][0][1]).innerHTML;
                     friend_requests_column.appendChild(element); 
                 }
             }
@@ -66,7 +66,7 @@
         });
 
         function respond_friend_request(acceptence, element) {
-            var recipient = element.parentElement.parentElement.parentElement.querySelector("#username_request_text").innerText;
+            var recipient = element.parentElement.parentElement.parentElement.querySelector("#user_tag_name").innerText;
             socket.emit('send_friend_request_response',JSON.stringify({sender: user_name, recipient:recipient, message:acceptence}));  
         }
 

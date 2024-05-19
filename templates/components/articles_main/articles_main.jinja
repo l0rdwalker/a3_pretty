@@ -25,7 +25,8 @@ c{% block content %}
             if (document.getElementById("main_article_window").getAttribute('article_id') == article_data['article_id']) {
                 
                 document.getElementById('article_title_p').innerText = article_data['title'];
-                document.getElementById('extra_details_p').innerText = "Written by " + String(article_data['author']);
+                console.log(article_data['author'][0],article_data['author'][1]);
+                document.getElementById('extra_details_p_tag_container').innerHTML = create_user_tag(article_data['author'][0],article_data['author'][1]).innerHTML;
                 document.getElementById('article_page_content').innerText = article_data['content'];
 
                 if (article_data['author'] == user_name) {
@@ -70,7 +71,7 @@ c{% block content %}
                 </div>
 
                 <div class="info-frame" style="display: flex;">
-                    <div class="author-frame"><p id="extra_details_p">by Author name</p></div>
+                    <div class="author-frame"><p id="written_by_static">Written by</p><div id="extra_details_p_tag_container"></div></div>
                 </div>
             </div>
 

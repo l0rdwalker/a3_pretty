@@ -38,10 +38,16 @@
 
 .notification-container {
     flex: 0.5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
 .svg-wpr {
     width: fit-content;
     height: fit-content;
     margin: auto;
     margin-top: 7px;
+
 }

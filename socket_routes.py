@@ -48,21 +48,51 @@ def relay_online_friends_list(user_name:str,notify_friends=True,on_disconnect=Fa
     online_friends = []
     for friend in all_friends:
         if (user_aggregator.is_online(friend)): #Main logic to determin if a user should be labelled online or offline
-            online_friends.append([friend,True]) 
+            online_friends.append([db.get_user_by_username_array(friend),True]) 
             if (notify_friends):
                 relay_online_friends_list(friend,notify_friends=False)
         else:
-            online_friends.append([friend,False])
+            online_friends.append([db.get_user_by_username_array(friend),False])
     if (on_disconnect == False):
         emit("update_friends_list",json.dumps({"friends_list":online_friends}),room=user_aggregator.get_relay_connection_reference(user_name))
     
-#route name is relay_all_users
+
+
 @socketio.on('relay_all_users')
-def relay_all_users(user_name):
+def relay_all_users(message):
+    message_json = json.loads(message)
     all_users = db.get_all_users()
-    user_name_json = json.loads(user_name)
-   # print(f"ALL: {all_users[0].user_name}")
-    emit("update_users_list",json.dumps({"users_list":all_users}),room=user_aggregator.get_relay_connection_reference(user_name_json["sender"]))
+    emit("update_users_list",json.dumps({"users_list":all_users}),room=user_aggregator.get_relay_connection_reference(message_json["sender"]))
+@socketio.on('relay_searched_users')
+def relay_searched_users(message):
+    message_json = json.loads(message)
+    all_users = db.get_all_users()
+    filtered_users = []
+    for user in all_users:
+        if (message_json['search_term'] in user[0]):
+            filtered_users.append(user)
+    emit("update_users_list",json.dumps({"users_list":filtered_users}),room=user_aggregator.get_relay_connection_reference(message_json["sender"]))
+
+
+
+@socketio.on('update_user_roll')
+def update_user_roll(message):
+    message_json = json.loads(message)
+    db.update_user_role(message_json['user_to_change'],message_json['new_role'])
+    relay_friend_requests(message_json['sender'])
+    relay_online_friends_list(message_json['sender'])
+    inform_status(json.dumps({'sender':message_json['user_to_change']}))
+    
+@socketio.on('update_mute_status')
+def update_mute_status(message):
+    message_json = json.loads(message)
+    db.update_user_mute(message_json['user_to_change'],message_json['mute_status'])
+    
+@socketio.on('check_mute_status')
+def check_mute_status(message):
+    message_json = json.loads(message)
+    db.check_mute_status(message_json['sender'])
+
 
 
 def user_sign_up_update():
@@ -72,9 +102,9 @@ def user_sign_up_update():
 
 def inform_error(error_msg:str, user_name:str, registered=True): ##Allows us to inform the frontend of any error which might occur. 
     if (registered): 
-        emit("error",error_msg,room=user_aggregator.get_relay_connection_reference(user_name)) #if user_name doesn't store connection reference, we must return the connection reference
+        emit("error",json.dumps({"error_msg":error_msg}),room=user_aggregator.get_relay_connection_reference(user_name)) 
     else:
-        emit("error",error_msg,room=user_name) #Otherwise, the user_name is just the connection reference itself
+        emit("error",json.dumps({"error_msg":error_msg}),room=user_name) 
 
 def jwt_token_check(token):
     try:
@@ -96,6 +126,10 @@ def user_search_list(message):
     for x in range(0,len(all_users_objs)):
         if not (all_users_objs[x][0] in existing_friends) and not (all_users_objs[x][0] == user_name):
             all_users_array.append([all_users_objs[x][0],all_users_objs[x][0] in sent_requests])
+    
+    for entry in all_users_array:
+        entry[0] = db.get_user_by_username_array(entry[0])
+    
     emit("user_search_get_all",json.dumps({"users":all_users_array}),room=user_aggregator.get_relay_connection_reference(user_name))
 
 @socketio.on('connect')
@@ -162,12 +196,14 @@ def send_friend_request_response(message):
             
 @socketio.on("new_chat_room")
 def create_new_chat_room(message):
-    ### MUTE CHECK ###
     message_json = json.loads(message)
-    if db.is_valid_username(message_json['sender']):
-        chat_room_id = db.create_new_chatroom(message_json['sender'])
-        get_chatroom_config(message)
-        send_chat_room(json.dumps({'sender':message_json['sender'],'chat_room_id':chat_room_id}))
+    if (db.is_not_mute(message_json['sender'])):
+        if db.is_valid_username(message_json['sender']):
+            chat_room_id = db.create_new_chatroom(message_json['sender'])
+            get_chatroom_config(message)
+            send_chat_room(json.dumps({'sender':message_json['sender'],'chat_room_id':chat_room_id}))
+    else:
+        inform_error("You cannot make a new chat room when muted.",request.sid,registered=False)
 
 @socketio.on("open_chat")
 def send_chat_room(message):
@@ -178,20 +214,24 @@ def send_chat_room(message):
 
 @socketio.on("add_user_to_chat")
 def add_user_to_chat(message):
-    ### MUTE CHECK ###
     message_json = json.loads(message)
-    if (db.is_valid_username(message_json['sender']) and db.is_valid_username(message_json['add_user'])):
-        if (db.is_valid_chatroomid(message_json['chat_room_id'])):
-            db.add_user_to_chat(message_json['add_user'],message_json['chat_room_id'])
-            update_chat_for_relevent_online_users(message_json['chat_room_id'])
+    if (db.is_not_mute(message_json['sender'])):
+        if (db.is_valid_username(message_json['sender']) and db.is_valid_username(message_json['add_user'])):
+            if (db.is_valid_chatroomid(message_json['chat_room_id'])):
+                db.add_user_to_chat(message_json['add_user'],message_json['chat_room_id'])
+                update_chat_for_relevent_online_users(message_json['chat_room_id'])
+    else:
+        inform_error("You cannot post to group chats when muted.",request.sid,registered=False)
 
 @socketio.on("send_message_to_chat")
 def send_messaage_to_chat(message):
-    ### MUTE CHECK ###
     message_json = json.loads(message)
-    if db.is_valid_username(message_json['sender']) and db.is_valid_chatroomid(message_json['chat_room_id']):
-        db.add_message_to_chat(message_json['sender'],message_json['message'],message_json['chat_room_id'])
-        update_chat_for_relevent_online_users(message_json['chat_room_id'])
+    if (db.is_not_mute(message_json['sender'])):
+        if db.is_valid_username(message_json['sender']) and db.is_valid_chatroomid(message_json['chat_room_id']):
+            db.add_message_to_chat(message_json['sender'],message_json['message'],message_json['chat_room_id'])
+            update_chat_for_relevent_online_users(message_json['chat_room_id'])
+    else:
+        inform_error("You cannot send messages when muted.",request.sid,registered=False)
 
 
 @socketio.on("get_chatrooms")
@@ -224,7 +264,6 @@ def delete_chat_by_id(message):
             new_chat_room_id = db.get_random_chatroom_for_user(user)
             send_chat_room(json.dumps({'sender':user,'chat_room_id':new_chat_room_id}))
     
-
 @socketio.on("get_autocomplete_suggestions")
 def get_autocomplete_suggestions(message):
     message_json = json.loads(message)
@@ -232,8 +271,6 @@ def get_autocomplete_suggestions(message):
 
     emit("name_suggestion",json.dumps({"suggestion":suggestion}),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
     
-
-
 ###### Article Functions ######
 @socketio.on("get_articles")
 def get_articles_config(message):
@@ -244,29 +281,33 @@ def get_articles_config(message):
 @socketio.on("get_article_by_id")
 def get_article_by_id(message):
     message_json = json.loads(message)
+    
     article = db.get_article_by_id(message_json['article_id'])
+    article['author'] = db.get_user_by_username_array(article['author'])
+        
     emit("open_article",json.dumps(article),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
     get_comments_by_article_id(message)
 
 @socketio.on("post_article")
 def post_article(message):
-    ### MUTE CHECK ###
     message_json = json.loads(message)
-    if (message_json['article']['article_id'] == 'null'):
-        article_id = db.post_article(message_json['article'])
-        get_articles_config(message)
-        message_json['article_id'] = article_id
-        get_article_by_id(json.dumps(message_json))
-    else:
-        db.edit_an_article(message_json['article'])
-        message_json['article_id'] = message_json['article']['article_id']
-        get_article_by_id(json.dumps(message_json))
+    if (db.is_not_mute(message_json['sender'])):
+        if (message_json['article']['article_id'] == 'null'):
+            article_id = db.post_article(message_json['article'])
+            get_articles_config(message)
+            message_json['article_id'] = article_id
+            get_article_by_id(json.dumps(message_json))
+        else:
+            db.edit_an_article(message_json['article'])
+            message_json['article_id'] = message_json['article']['article_id']
+            get_article_by_id(json.dumps(message_json))
 
-        online_users = user_aggregator.get_all_online_users()
-        for user in online_users:
-            get_article_by_id(json.dumps({'article_id':message_json['article_id'],'sender':user}))
-        
-    update_everyones_article_list()
+            online_users = user_aggregator.get_all_online_users()
+            for user in online_users:
+                get_article_by_id(json.dumps({'article_id':message_json['article_id'],'sender':user}))
+        update_everyones_article_list()
+    else:
+        inform_error("You cannot post articles when muted.",request.sid,registered=False)
     
 def update_everyones_article_list():
     all_online_users = user_aggregator.get_all_online_users()
@@ -288,9 +329,12 @@ def hide_deleted_article_from_users(article_id):
 @socketio.on("post_comment")
 def post_comment(message):
     message_json = json.loads(message)
-    if not (message_json['article_id'] == None):
-        db.post_comment_to_article(message_json)
-        update_everyones_comment_section(message_json['article_id'])
+    if (db.is_not_mute(message_json['sender'])):
+        if not (message_json['article_id'] == None):
+            db.post_comment_to_article(message_json)
+            update_everyones_comment_section(message_json['article_id'])
+    else:
+        inform_error("You cannot post commented when muted",request.sid,registered=False)
         
 def update_everyones_comment_section(article_id):
     online_users = user_aggregator.get_all_online_users()
@@ -302,3 +346,9 @@ def get_comments_by_article_id(message):
     message_json = json.loads(message)
     comments = db.get_comments_by_article_id(message_json['article_id'])
     emit("get_article_comments",json.dumps({'article_id':message_json['article_id'],'comments':comments}),room=user_aggregator.get_relay_connection_reference(message_json['sender']))
+
+@socketio.on("inform_status")
+def inform_status(message):
+    message_json = json.loads(message)
+    status = db.get_user_status(message_json['sender'])
+    emit("get_user_status",json.dumps({'status':status}),room=user_aggregator.get_relay_connection_reference(message_json['sender']))

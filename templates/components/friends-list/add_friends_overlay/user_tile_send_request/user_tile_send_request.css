@@ -5,11 +5,8 @@
     background-color: white;
     margin-bottom: 2px;
     display: flex;
-}
-
-.user_row p {
-    padding-left: 20px;
-    padding-top: 15px;
+    justify-content: center;
+    align-items: center;
 }
 
 .user_row_username {

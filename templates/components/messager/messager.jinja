@@ -20,8 +20,10 @@
                 var element = document.createElement("div");
                 element.innerHTML = `{% include './components/messager/message-history/message-history.jinja' %}`;
                 
+                console.log(messages[i]['from']);
+
                 element.querySelector('#message-history-content').innerText = messages[i]['message'];
-                element.querySelector('#message-history-username').innerText = messages[i]['from'];
+                element.querySelector('#message_history_user_tag').innerHTML = create_user_tag(messages[i]['from'][0],messages[i]['from'][1]).innerHTML;
 
                 element.setAttribute("chat_room_id",  messages[i]['from']);
                 message_history_parent.appendChild(element);
